@@ -42,7 +42,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'users',
     'pagos',
-    'versionedPagos'
+    'versionedPagos',
+    'expired_payments',
+    'services'
+    
 ]
 
 MIDDLEWARE = [
