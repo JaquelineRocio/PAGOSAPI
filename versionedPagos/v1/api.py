@@ -1,16 +1,12 @@
-from pagos.models import Pagos
-from rest_framework import viewsets
+from rest_framework import viewsets,permissions,filters,mixins
+from pagos.models import Pago
 from .serializers import PagoSerializer
-from rest_framework.permissions import IsAuthenticated
-from .pagination import StandardResultsSetPagination
-from rest_framework import viewsets, filters 
+from .pagination import PagosPagination
 
-class PagoViewSet(viewsets.ModelViewSet):
-    queryset = Pagos.objects.get_queryset().order_by('id')
+class PagosView(mixins.CreateModelMixin,mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+    queryset = Pago.objects.all()
     serializer_class = PagoSerializer
-    pagination_class = StandardResultsSetPagination
+    pagination_class = PagosPagination
+    permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter]
-    permission_classes = [IsAuthenticated]
-
-    search_fields = ['usuario__id', 'fecha_pago', 'servicio']
-    throttle_scope = 'pagos'
+    search_fields = ['=user__id','=fecha_pago','=servicio_v1']
