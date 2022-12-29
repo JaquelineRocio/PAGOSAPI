@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./versionedPagos/v1"
+    ]
+}
