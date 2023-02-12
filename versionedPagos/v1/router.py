@@ -1,7 +1,7 @@
 from . import api
 from rest_framework import routers
 from django.urls import path
-from users.api import LoginView,SignUpView,GetUsers
+from users.api import LoginView,RegisterView,GetUsers
 from rest_framework_simplejwt.views import(
     TokenObtainPairView,
     TokenRefreshView,
@@ -9,19 +9,20 @@ from rest_framework_simplejwt.views import(
 )
 
 router = routers.DefaultRouter()
-router.register(r'pagos',api.PagosView,'pagos')
+router.register(r'payments',api.PaymentsView,'payments')
 
-pagos_urlpatterns = router.urls
+payments_urlpatterns = router.urls
 
 router_user = routers.DefaultRouter()
 router_user.register(r'users',GetUsers,basename="read-only")
 
 user_urlpatterns=[
-    path("signup/", SignUpView.as_view(), name="signup"),
+    path("register/", RegisterView.as_view(), name="register"),
     path("login/", LoginView.as_view(), name="login"),
-    path("jwt/create/", TokenObtainPairView.as_view(), name="jwt_create"),
-    path("jwt/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("jwt/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    path("create_jwt/", TokenObtainPairView.as_view(), name="jwt_create"),
+    path("refresh_jwt/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("verify_jwt/", TokenVerifyView.as_view(), name="token_verify"),
 ]
+
 
 user_urlpatterns+=router_user.urls

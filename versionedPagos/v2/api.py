@@ -3,19 +3,19 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated,AllowAny
 from services.models import Service
 from users.models import User
 from expired_payments.models import ExpiredPayment
-from .serializers import ServiceSerializer,UserSerializer, ExpiredPaymentSerializer,PagoSerializerV2
-from users.serializers import SignUpSerializer
-from pagos.models import Pago
-from .pagination import PagosPaginationV2
+from .serializers import ServiceSerializer,UserSerializer, ExpiredPaymentSerializer,PaymentSerializerV2
+from users.serializers import RegisterSerializer
+from payment_user.models import PaymentUser
+from .pagination import PaymentsPaginationV2
 from rest_framework import filters
 from .throttle import v2RateThrottle
 
-class PagosViewV2(ModelViewSet):
-    queryset = Pago.objects.all()
-    serializer_class = PagoSerializerV2
-    pagination_class = PagosPaginationV2
+class PaymentsViewV2(ModelViewSet):
+    queryset = PaymentUser.objects.all()
+    serializer_class = PaymentSerializerV2
+    pagination_class = PaymentsPaginationV2
     filter_backends = [filters.SearchFilter]
-    search_fields = ['=fecha_pago','=expiration_date']
+    search_fields = ['=payment_date','=expiration_date']
     throttle_classes = [v2RateThrottle]
 
     def get_permissions(self):
@@ -29,14 +29,14 @@ class PagosViewV2(ModelViewSet):
         return [permission() for permission in permission_classes]
         
     def create(self, request, *args, **kwargs):
-        pago = super().create(request, *args, **kwargs)
-        ultimo_pago = Pago.objects.order_by('-id').first()
-        pago_db = Pago.objects.get(id=ultimo_pago.id)
-        if pago_db.expiration_date < pago_db.fecha_pago:
-            penalty = pago_db.monto*0.15
-            expired_payment = ExpiredPayment(pago=pago_db,penalty_free_amount=penalty)
+        payment = super().create(request, *args, **kwargs)
+        last_payment = PaymentUser.objects.order_by('-id').first()
+        payment_db = PaymentUser.objects.get(id=last_payment.id)
+        if payment_db.expiration_date < payment_db.payment_date:
+            penalty = payment_db.amount*0.15
+            expired_payment = ExpiredPayment(payment_user=payment_db,penalty_free_amount=penalty)
             expired_payment.save()
-        return pago
+        return payment
 
 class ServiceViewSet(ModelViewSet):
 
@@ -75,13 +75,12 @@ class ExpiredPaymentViewSet(ModelViewSet):
 class UsersViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_classes = {
-        'create': SignUpSerializer,
+        'create': RegisterSerializer,
         
     }
     default_serializer_class = UserSerializer 
 
     def get_serializer_class(self):
-        print(self.action)
         return self.serializer_classes.get(self.action, self.default_serializer_class)
 
     def get_permissions(self):
@@ -94,4 +93,3 @@ class UsersViewSet(ModelViewSet):
             permission_classes=[IsAuthenticated]
         
         return [permission() for permission in permission_classes]
-    

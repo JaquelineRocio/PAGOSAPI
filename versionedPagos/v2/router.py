@@ -1,16 +1,16 @@
-from .api import ServiceViewSet,UsersViewSet, ExpiredPaymentViewSet,PagosViewV2
+from .api import ServiceViewSet,UsersViewSet, ExpiredPaymentViewSet,PaymentsViewV2
 from rest_framework import routers
 from django.urls import path
-from users.api import LoginView,SignUpView,GetUsers
+from users.api import LoginView,RegisterView,GetUsers
 from rest_framework_simplejwt.views import(
     TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
 )
 router_pagos = routers.DefaultRouter()
-router_pagos.register(r'pagos',PagosViewV2,'pagosv2')
+router_pagos.register(r'payments',PaymentsViewV2,'paymentsv2')
 
-pagos_urlpatterns = router_pagos.urls
+payments_urlpatterns = router_pagos.urls
 
 router_service = routers.DefaultRouter()
 router_service.register(r"services",ServiceViewSet,basename="service")
@@ -26,11 +26,11 @@ expired_payments_urlpatterns = router_expired_payments.urls
 router_user=routers.DefaultRouter()
 router_user.register(r'users',UsersViewSet,basename="user")
 user_urlpatterns=[
-    path("signup/", SignUpView.as_view(), name="signup"),
+    path("register/", RegisterView.as_view(), name="register"),
     path("login/", LoginView.as_view(), name="login"),
-    path("jwt/create/", TokenObtainPairView.as_view(), name="jwt_create"),
-    path("jwt/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("jwt/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    path("create_jwt/", TokenObtainPairView.as_view(), name="jwt_create"),
+    path("refresh_jwt/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("verify_jwt/", TokenVerifyView.as_view(), name="token_verify"),
 ]
 
 

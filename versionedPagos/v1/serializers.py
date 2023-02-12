@@ -1,15 +1,16 @@
 from rest_framework import serializers
-from pagos.models import Pago,User
+from payment_user.models import PaymentUser, User
 
-class PagoSerializer(serializers.ModelSerializer):
+class PaymentSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(queryset = User.objects.all(),slug_field='email')
+    
     class Meta:
-        model = Pago
-        fields = ['id','user','servicio_v1','monto','fecha_pago']
-        read_only_fields = ['fecha_pago']
+        model = PaymentUser
+        fields = ['id','user','service_v1','amount','payment_date']
+        read_only_fields = ['payment_date']
     
     def validate_servicio_v1(self,value):
         if value:
-            if value.lower() not in ['netflix','amazon video','star+','paramount+']:
-                raise serializers.ValidationError('Error, las opciones de servicio son [Netflix,Amazon Video,Star+,Paramount+]')
+            if value.lower() not in ['netflix','amazon video','hbo','paramount+']:
+                raise serializers.ValidationError('Elija una opción válida')
         return value
