@@ -1,7 +1,7 @@
-from rest_framework.routers import DefaultRouter
-from .api import ExpiredPaymentViewSet
-router=DefaultRouter()
+from django.urls import re_path,include
+from versionedPagos.v2.router import expired_payments_urlpatterns as expired_payments_v2
 
-router.register(r"expired_payments",ExpiredPaymentViewSet,basename="expired_payments")
 
-urlpatterns = router.urls
+urlpatterns = [
+    re_path(r'^v2/',include(expired_payments_v2),name="expired_pay"),
+]
